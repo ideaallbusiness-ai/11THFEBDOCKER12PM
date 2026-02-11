@@ -1,70 +1,132 @@
-# Getting Started with Create React App
+# Travvip CRM
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+A full-featured Travel CRM built with Next.js 14 and Supabase.
 
-## Available Scripts
+## Features
 
-In the project directory, you can run:
+- Multi-tenant organization management
+- Role-based access control (Super Admin, Org Admin, Agent)
+- Query management with itinerary builder
+- PDF generation for travel itineraries
+- Email notifications on organization approval/rejection
+- Hotels, packages, activities, routes, and transport management
 
-### `npm start`
+## Tech Stack
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+- **Frontend & Backend**: Next.js 14 (App Router)
+- **Database**: Supabase (PostgreSQL)
+- **Authentication**: Supabase Auth
+- **Styling**: Tailwind CSS + Shadcn/UI
+- **PDF Generation**: Playwright
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+## Quick Start
 
-### `npm test`
+### Prerequisites
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+- Node.js 18+ (recommended: 20+)
+- Yarn or npm
+- Supabase account
 
-### `npm run build`
+### Environment Variables
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+Create a `.env` file in the root directory:
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+```env
+NEXT_PUBLIC_SUPABASE_URL=your_supabase_url
+NEXT_PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key
+SUPABASE_SERVICE_ROLE_KEY=your_supabase_service_role_key
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+# Optional: Email notifications
+RESEND_API_KEY=your_resend_api_key
+RESEND_FROM_EMAIL=noreply@yourdomain.com
+```
 
-### `npm run eject`
+### Installation
 
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
+```bash
+# Install dependencies
+yarn install
 
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+# Run development server
+yarn dev
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
+# Build for production
+yarn build
 
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
-
-## Learn More
-
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
-
-To learn React, check out the [React documentation](https://reactjs.org/).
-
-### Code Splitting
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
-
-### Analyzing the Bundle Size
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
-
-### Making a Progressive Web App
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
-
-### Advanced Configuration
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
+# Start production server
+yarn start
+```
 
 ### Deployment
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
+#### Vercel (Recommended)
 
-### `npm run build` fails to minify
+1. Push code to GitHub
+2. Connect to Vercel
+3. Add environment variables
+4. Deploy
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+#### Docker
+
+```dockerfile
+FROM node:20-alpine AS builder
+WORKDIR /app
+COPY package.json yarn.lock ./
+RUN yarn install --frozen-lockfile
+COPY . .
+RUN yarn build
+
+FROM node:20-alpine AS runner
+WORKDIR /app
+ENV NODE_ENV=production
+COPY --from=builder /app/.next/standalone ./
+COPY --from=builder /app/.next/static ./.next/static
+COPY --from=builder /app/public ./public
+EXPOSE 3000
+CMD ["node", "server.js"]
+```
+
+#### Self-hosted
+
+```bash
+yarn build
+yarn start
+```
+
+## Project Structure
+
+```
+├── app/
+│   ├── api/                 # API routes (all backend logic)
+│   │   └── [[...path]]/     # Catch-all API handler
+│   ├── (auth)/              # Auth pages (login, register)
+│   └── (dashboard)/         # Dashboard pages
+├── components/              # React components
+│   └── ui/                  # Shadcn UI components
+├── contexts/                # React contexts (Auth, Data)
+├── lib/                     # Utilities and helpers
+│   ├── supabase.js          # Supabase client
+│   ├── pdfTemplate.js       # PDF template generator
+│   └── api-helpers.js       # API utilities
+└── public/                  # Static assets
+```
+
+## API Endpoints
+
+All API routes are handled by `/api/[[...path]]/route.js`:
+
+- `GET/POST /api/queries` - Query management
+- `GET/POST /api/hotels` - Hotel management
+- `GET/POST /api/packages` - Package management
+- `GET/POST /api/activities` - Activity management
+- `GET/PUT /api/organization` - Organization settings
+- `POST /api/pdf/generate` - PDF generation
+- `GET /api/tenant-organizations` - Multi-tenant management
+
+## Test Credentials
+
+- **Super Admin**: newadmin@travelcrm.com / TravelCRM2025!
+
+## License
+
+MIT
