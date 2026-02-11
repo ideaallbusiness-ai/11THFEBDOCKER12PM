@@ -51,13 +51,17 @@ export function DataProvider({ children }) {
     const cached = globalCache.data[endpoint]
     const timestamp = globalCache.timestamps[endpoint]
 
+    console.log(`[DataContext] fetchData called for ${endpoint}, force=${force}, cached=${!!cached}`)
+
     // Return cached data if valid and not forced refresh
     if (!force && cached && timestamp && (now - timestamp) < globalCache.TTL) {
+      console.log(`[DataContext] Returning cached data for ${endpoint}`)
       return cached
     }
 
     // Prevent duplicate concurrent fetches
     if (fetchingRef.current[endpoint]) {
+      console.log(`[DataContext] Already fetching ${endpoint}, returning cached`)
       return cached || []
     }
 
@@ -66,6 +70,7 @@ export function DataProvider({ children }) {
 
     try {
       const token = await getToken()
+      console.log(`[DataContext] Fetching ${endpoint}, hasToken=${!!token}`)
       // Add cache busting timestamp to URL
       const cacheBuster = `${endpoint.includes('?') ? '&' : '?'}_t=${now}`
       const res = await fetch(`/api${endpoint}${cacheBuster}`, {
@@ -76,16 +81,20 @@ export function DataProvider({ children }) {
         },
         cache: 'no-store'
       })
+      console.log(`[DataContext] Response for ${endpoint}: ${res.status}`)
       if (res.ok) {
         const data = await res.json()
+        console.log(`[DataContext] Got ${Array.isArray(data) ? data.length : 'object'} items for ${endpoint}`)
         globalCache.data[endpoint] = data
         globalCache.timestamps[endpoint] = now
         setCache(prev => ({ ...prev, [endpoint]: data }))
         notifySubscribers(endpoint, data)
         return data
+      } else {
+        console.error(`[DataContext] Failed to fetch ${endpoint}: ${res.status} ${res.statusText}`)
       }
     } catch (e) {
-      console.error(`Failed to fetch ${endpoint}:`, e)
+      console.error(`[DataContext] Error fetching ${endpoint}:`, e)
     } finally {
       fetchingRef.current[endpoint] = false
       setLoading(prev => ({ ...prev, [endpoint]: false }))
