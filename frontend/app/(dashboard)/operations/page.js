@@ -411,6 +411,10 @@ export default function OperationsPage() {
                   setSelectedQuery(query)
                   setShowBookingDialog(true)
                 }}
+                onUnbook={(type, item, idx) => {
+                  const itemId = `${item.hotelId || item.transportId || ''}-${idx}`
+                  markAsUnbooked(query.id, type === 'hotel' ? 'hotels' : 'transports', itemId)
+                }}
                 onAddService={() => {
                   setSelectedQuery(query)
                   setShowExtraServiceDialog(true)
@@ -443,6 +447,10 @@ export default function OperationsPage() {
                   setBookingItem({ ...item, idx })
                   setSelectedQuery(query)
                   setShowBookingDialog(true)
+                }}
+                onUnbook={(type, item, idx) => {
+                  const itemId = `${item.hotelId || item.transportId || ''}-${idx}`
+                  markAsUnbooked(query.id, type === 'hotel' ? 'hotels' : 'transports', itemId)
                 }}
                 onAddService={() => {
                   setSelectedQuery(query)
