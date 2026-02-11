@@ -134,6 +134,23 @@ export default function QueryDetailPage() {
     }
   }
 
+  // Helper function to log activities
+  const logActivity = async (activityData) => {
+    try {
+      const authToken = await getToken()
+      await fetch('/api/activities', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${authToken}`
+        },
+        body: JSON.stringify(activityData)
+      })
+    } catch (error) {
+      console.error('Failed to log activity:', error)
+    }
+  }
+
   const handleStatusChange = async (newStatus) => {
     const oldStatus = query.status
     setUpdatingStatus(true)
