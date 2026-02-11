@@ -248,6 +248,16 @@ export default function QueryDetailPage() {
       setShowFollowUpDialog(false)
       setFollowUpNote('')
       setFollowUpDate('')
+      
+      // Log activity for follow-up
+      await logActivity({
+        queryId: params.id,
+        type: 'followup',
+        message: `added follow-up: "${followUpNote}"`,
+        user: user?.name || 'User',
+        userId: user?.id
+      })
+      
       toast.success('Follow-up added')
       
       if (query.status === 'new') {
