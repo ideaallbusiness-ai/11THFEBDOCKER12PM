@@ -74,6 +74,7 @@ class TravvipCRMTester:
                 print(f"   ⚠️  Expected 20+ queries, found {len(response)}")
                 return False
         
+        print(f"   ❌ Queries API test failed - success: {success}, response type: {type(response)}")
         return False
 
     def test_dashboard_stats(self):
