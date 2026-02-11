@@ -162,6 +162,15 @@ export default function QueryDetailPage() {
       const updatedQuery = await response.json()
       setQuery(updatedQuery)
       
+      // Log activity for status change
+      await logActivity({
+        queryId: params.id,
+        type: 'status_change',
+        message: `changed status from ${oldStatus} to ${newStatus}`,
+        user: user?.name || 'User',
+        userId: user?.id
+      })
+      
       // Immediately fetch fresh data to ensure UI is in sync
       await fetchData()
       
