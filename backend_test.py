@@ -90,8 +90,11 @@ class TravvipCRMTester:
             stats = ['totalQueries', 'newQueries', 'confirmedQueries']
             found_stats = [stat for stat in stats if stat in response]
             print(f"   ✅ Dashboard stats available: {found_stats}")
-            return len(found_stats) >= 2
-            
+            result = len(found_stats) >= 2
+            print(f"   Dashboard test result: {result}")
+            return result
+        
+        print(f"   ❌ Dashboard test failed - success: {success}, response type: {type(response)}")
         return False
 
     def test_packages_api(self):
