@@ -758,14 +758,23 @@ function QueryOperationCard({ query, itinerary, bookings, pendingActions, onMark
                               </div>
                             </div>
                             {isBooked ? (
-                              <div className="ml-3">
+                              <div className="ml-3 space-y-2">
                                 <Badge variant="outline" className="bg-green-100 text-green-700 dark:bg-green-900 dark:text-green-300">
                                   <Check className="w-3 h-3 mr-1" />
                                   Booked
                                 </Badge>
-                                <p className="text-xs text-muted-foreground mt-1">
+                                <p className="text-xs text-muted-foreground">
                                   by {isBooked.bookedBy}
                                 </p>
+                                <Button 
+                                  size="sm" 
+                                  variant="outline"
+                                  onClick={() => onUnbook('transport', transport, idx)}
+                                  className="w-full text-orange-600 border-orange-300 hover:bg-orange-50"
+                                >
+                                  <X className="w-3 h-3 mr-1" />
+                                  Unbook
+                                </Button>
                               </div>
                             ) : (
                               <Button size="sm" onClick={() => onMarkBooked('transport', transport, idx)} className="ml-3">
