@@ -571,7 +571,10 @@ function QueryOperationCard({ query, itinerary, bookings, pendingActions, onMark
       return { checkIn: null, checkOut: null }
     }
 
-    const travelDate = new Date(query.travelDate)
+    // Parse date properly to avoid timezone issues
+    const travelDateStr = query.travelDate.split('T')[0] // Get YYYY-MM-DD part only
+    const [year, month, day] = travelDateStr.split('-').map(Number)
+    const travelDate = new Date(year, month - 1, day) // Month is 0-indexed
     
     // Calculate cumulative nights before this hotel
     let nightsBeforeThisHotel = 0
