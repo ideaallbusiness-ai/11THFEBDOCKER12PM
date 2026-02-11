@@ -47,7 +47,7 @@ class TravvipCRMTester:
                 print(f"❌ Failed - Expected {expected_status}, got {response.status_code}")
                 print(f"   Response: {response.text[:200]}")
 
-            return success, response.json() if response.text and response.text.startswith('{') else response.text
+            return success, response.json() if success and response.text else response.text
 
         except requests.exceptions.RequestException as e:
             print(f"❌ Failed - Network Error: {str(e)}")
