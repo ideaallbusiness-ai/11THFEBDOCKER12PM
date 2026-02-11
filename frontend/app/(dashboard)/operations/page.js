@@ -538,7 +538,7 @@ export default function OperationsPage() {
 }
 
 // Query Operation Card Component
-function QueryOperationCard({ query, itinerary, bookings, pendingActions, onMarkBooked, onAddService, onUpdateServiceStatus }) {
+function QueryOperationCard({ query, itinerary, bookings, pendingActions, onMarkBooked, onUnbook, onAddService, onUpdateServiceStatus }) {
   const [expanded, setExpanded] = useState(false)
 
   const hotels = itinerary?.hotelSelections || []
