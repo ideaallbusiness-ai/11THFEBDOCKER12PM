@@ -147,7 +147,7 @@ export default function OperationsPage() {
     }
   }
 
-  const markAsBooked = (queryId, type, itemId) => {
+  const markAsBooked = async (queryId, type, itemId) => {
     const newBookings = { ...bookings }
     if (!newBookings[queryId]) {
       newBookings[queryId] = { hotels: {}, transports: {}, guides: {}, extraServices: [] }
@@ -158,8 +158,47 @@ export default function OperationsPage() {
       bookedBy: user?.name || 'Operations'
     }
     saveBookings(newBookings)
+    
+    // Log activity
+    await logActivity(queryId, 'booking', `Marked ${type === 'hotels' ? 'hotel' : 'transport'} as booked`)
+    
     toast.success('Marked as booked!')
     setShowBookingDialog(false)
+  }
+
+  const markAsUnbooked = async (queryId, type, itemId) => {
+    const newBookings = { ...bookings }
+    if (newBookings[queryId] && newBookings[queryId][type] && newBookings[queryId][type][itemId]) {
+      delete newBookings[queryId][type][itemId]
+      saveBookings(newBookings)
+      
+      // Log activity
+      await logActivity(queryId, 'booking', `Unmarked ${type === 'hotels' ? 'hotel' : 'transport'} - reverted to unbooked`)
+      
+      toast.success('Marked as unbooked!')
+    }
+  }
+
+  const logActivity = async (queryId, type, message) => {
+    try {
+      const token = getToken()
+      await fetch('/api/activities', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify({
+          queryId,
+          type,
+          message,
+          user: user?.name || 'Operations User',
+          userId: user?.id
+        })
+      })
+    } catch (error) {
+      console.error('Failed to log activity:', error)
+    }
   }
 
   const addExtraService = (queryId) => {
