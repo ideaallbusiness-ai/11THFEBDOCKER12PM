@@ -372,6 +372,24 @@ export default function QueryDetailPage() {
       setQuery(savedQuery)
       setShowEditDialog(false)
       
+      // Log activity for query edit
+      const changedFields = []
+      Object.keys(editForm).forEach(key => {
+        if (query[key] !== editForm[key]) {
+          changedFields.push(key)
+        }
+      })
+      
+      if (changedFields.length > 0) {
+        await logActivity({
+          queryId: params.id,
+          type: 'edit',
+          message: `updated query details (${changedFields.join(', ')})`,
+          user: user?.name || 'User',
+          userId: user?.id
+        })
+      }
+      
       // Refresh all data from server to ensure consistency
       await fetchData()
       
